@@ -29,7 +29,7 @@ const Header = () => {
                     {isHomePage ? <a href="#destinations">Destinos</a> : <Link to="/#destinations">Destinos</Link>}
                     {isHomePage ? <a href="#experiences">Experiencias</a> : <Link to="/#experiences">Experiencias</Link>}
                     <Link to="/nosotros" className={location.pathname === '/nosotros' ? 'active-link' : ''}>Nosotros</Link>
-                    <a href="#contact">Contacto</a>
+                    {isHomePage ? <a href="#contact">Contacto</a> : <Link to="/#contact">Contacto</Link>}
                 </nav>
                 <a href="https://wa.me/529992741074" target="_blank" rel="noopener noreferrer" className="pill-button outline">Planifica Tu Viaje</a>
             </div>
