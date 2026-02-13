@@ -1,14 +1,20 @@
 :root {
-  /* Color Palette */
+  /* Color Palette - Dark Luxury */
   --bg-dark: #0a1f24;
-  /* Deep navy / dark teal */
+  /* Deep greenish navy */
   --bg-light: #fdfbf7;
-  /* Warm off-white */
+  /* Warm off-white/cream */
   --accent-gold: #c5a059;
-  /* Soft gold */
-  --text-main: #2c3e50;
-  --text-muted: #576574;
-  --text-white: #ffffff;
+  /* Classic Gold */
+  --accent-gold-hover: #e0b865;
+
+  /* Text */
+  --text-main: #fcfcfc;
+  /* Almost white for dark bg */
+  --text-muted: #8b9bb4;
+  /* Muted slate for secondary text */
+  --text-dark: #0a1f24;
+  /* For light sections */
 
   /* Typography */
   --font-serif: 'Playfair Display', serif;
@@ -23,6 +29,23 @@
 
   /* Transitions */
   --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fade: opacity 0.4s ease;
+}
+
+/* Premium Utilities */
+.text-gold {
+  color: var(--accent-gold);
+}
+
+.bg-glass {
+  background: rgba(10, 31, 36, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.1);
+}
+
+.border-gold {
+  border-color: var(--accent-gold) !important;
 }
 
 * {
@@ -33,9 +56,10 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-light);
+  background-color: var(--bg-dark);
+  /* Default to dark */
   color: var(--text-main);
-  line-height: 1.6;
+  line-height: 1.7;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -47,7 +71,9 @@ h4,
 .serif {
   font-family: var(--font-serif);
   font-weight: 400;
-  color: var(--bg-dark);
+  color: var(--text-main);
+  /* Headings are light on dark */
+  letter-spacing: -0.02em;
 }
 
 a {
@@ -78,33 +104,72 @@ button,
 }
 
 .pill-button {
-  display: inline-block;
-  padding: 0.8rem 2rem;
-  border-radius: 50px;
-  background-color: var(--accent-gold);
-  color: var(--text-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  border-radius: 0;
+  /* Square/Sharp edges for luxury feel? Or keep pill? Let's keep pill but refined */
+  border-radius: 100px;
+  background-color: transparent;
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
   font-weight: 500;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.pill-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: var(--accent-gold);
+  transition: var(--transition-smooth);
+  z-index: -1;
 }
 
 .pill-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  filter: brightness(1.1);
+  color: var(--bg-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(197, 160, 89, 0.15);
+}
+
+.pill-button:hover::before {
+  width: 100%;
+}
+
+.pill-button.filled {
+  background-color: var(--accent-gold);
+  color: var(--bg-dark);
+}
+
+.pill-button.filled:hover {
+  background-color: var(--accent-gold-hover);
+  color: var(--bg-dark);
+  border-color: var(--accent-gold-hover);
 }
 
 .pill-button.outline {
-  background-color: transparent;
-  border: 1px solid var(--text-white);
-  color: var(--text-white);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-main);
 }
 
 .pill-button.outline:hover {
-  background-color: var(--text-white);
+  border-color: var(--text-main);
+  background: var(--text-main);
   color: var(--bg-dark);
+}
+
+.pill-button.outline::before {
+  display: none;
 }
 
 /* Animations */

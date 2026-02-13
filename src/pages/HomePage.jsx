@@ -138,12 +138,12 @@ const ContactSection = () => {
                     </div>
                     <h2 className="section-headline">Comienza Tu Viaje</h2>
                     <p className="section-subtext">Cuéntanos tus sueños de viaje y diseñaremos una experiencia a tu medida.</p>
-                    <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(197, 160, 89, 0.1)', borderRadius: '10px', display: 'inline-block' }}>
-                        <p style={{ marginBottom: '0.5rem', fontWeight: 'bold', color: 'var(--bg-dark)' }}>¿Prefieres un trato personal?</p>
-                        <p style={{ fontSize: '0.95rem', marginBottom: '1rem' }}>
+                    <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(197, 160, 89, 0.1)', borderRadius: '10px', display: 'inline-block', border: '1px solid rgba(197, 160, 89, 0.3)' }}>
+                        <p style={{ marginBottom: '0.5rem', fontWeight: 'bold', color: 'var(--accent-gold)' }}>¿Prefieres un trato personal?</p>
+                        <p style={{ fontSize: '0.95rem', marginBottom: '1rem', color: 'var(--text-main)' }}>
                             Solicita una <strong>visita a domicilio/oficina</strong> y planearemos tus vacaciones contigo.
                         </p>
-                        <a href="https://wa.me/529992741074?text=Hola,%20me%20interesa%20agendar%20una%20visita%20para%20planear%20mi%20viaje." target="_blank" rel="noopener noreferrer" className="pill-button outline" style={{ borderColor: 'var(--bg-dark)', color: 'var(--bg-dark)', fontSize: '0.75rem' }}>
+                        <a href="https://wa.me/529992741074?text=Hola,%20me%20interesa%20agendar%20una%20visita%20para%20planear%20mi%20viaje." target="_blank" rel="noopener noreferrer" className="pill-button outline" style={{ fontSize: '0.75rem' }}>
                             Agendar Visita Personal
                         </a>
                     </div>
