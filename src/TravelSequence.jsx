@@ -18,11 +18,14 @@ const TravelSequence = () => {
         });
     }, [totalFrames]);
 
-    // Framer Motion Scroll Tracking (Keep the element structure, but remove scroll dependency for frames)
+    // Framer Motion Scroll Tracking
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end end"]
     });
+
+    // Map scroll progress (0 to 1) to frame index (0 to 39)
+    const frameIndex = useTransform(scrollYProgress, [0, 1], [0, totalFrames - 1]);
 
     useEffect(() => {
         const loadImages = async () => {
@@ -48,16 +51,20 @@ const TravelSequence = () => {
         if (!canvas || images.length === 0) return;
 
         const ctx = canvas.getContext('2d');
-        const img = images[Math.floor(index) % totalFrames]; // Loop safely
+        const img = images[Math.round(index)]; // Use Math.round for scroll binding
         if (!img) return;
 
         // Adaptive sizing
         const dpr = window.devicePixelRatio || 1;
         // Set internal resolution
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-        // Normalize coordinate system
-        ctx.scale(dpr, dpr);
+        if (canvas.width !== window.innerWidth * dpr || canvas.height !== window.innerHeight * dpr) {
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            ctx.scale(dpr, dpr);
+        } else {
+            // Reset scale if not resizing (optimization)
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
 
         // Maintain Aspect Ratio (Cover)
         const canvasAspect = window.innerWidth / window.innerHeight;
@@ -77,52 +84,43 @@ const TravelSequence = () => {
             offsetY = 0;
         }
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     };
 
-    // Auto-play Loop
+    // React to scroll changes
     useEffect(() => {
         if (isLoading || images.length === 0) return;
 
-        let animationFrameId;
-        let currentFrame = 0;
-        let lastTime = 0;
-        const fps = 18; // Cinematic framerate (Slower)
-        const interval = 1000 / fps;
+        // Initial render
+        renderFrame(0);
 
-        const animate = (time) => {
-            if (time - lastTime > interval) {
-                renderFrame(currentFrame);
-                currentFrame = (currentFrame + 1) % totalFrames;
-                lastTime = time;
-            }
-            animationFrameId = requestAnimationFrame(animate);
-        };
+        // Subscribe to scroll changes
+        const unsubscribe = frameIndex.on("change", (latest) => {
+            renderFrame(latest);
+        });
 
-        animationFrameId = requestAnimationFrame(animate);
-
-        return () => cancelAnimationFrame(animationFrameId);
-    }, [isLoading, images]);
+        return () => unsubscribe();
+    }, [isLoading, images, frameIndex]);
 
     // Handle Resize
     useEffect(() => {
         const handleResize = () => {
             if (!isLoading && images.length > 0) {
-                // Just re-render current frame roughly or let the loop handle it
+                renderFrame(frameIndex.get());
             }
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [isLoading, images]);
+    }, [isLoading, images, frameIndex]);
 
     return (
-        <div ref={containerRef} style={{ height: '100vh', position: 'relative' }}> {/* Changed height to 100vh since it's auto-play now */}
+        <div ref={containerRef} style={{ height: '400vh', position: 'relative' }}>
             <div style={{
-                position: 'absolute',
+                position: 'sticky',
                 top: 0,
                 left: 0,
-                width: '100vw',
+                width: '100%',
                 height: '100vh',
                 overflow: 'hidden',
                 zIndex: 0
@@ -150,28 +148,29 @@ const TravelSequence = () => {
                     height: '100%',
                     background: 'linear-gradient(to right, rgba(10, 31, 36, 0.5), transparent)'
                 }}></div>
-            </div>
 
-            {/* Content overlays the canvas */}
-            <div
-                className="hero-content"
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100vh',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '0 4rem',
-                    zIndex: 1
-                }}
-            >
-                <div className="hero-text-block">
-                    <h1 className="hero-headline">El Alma de la Tierra, <br />Refinada para Ti.</h1>
-                    <p className="hero-subtext">Vive el viaje como una colección de momentos cinematográficos y atemporales, diseñados para el explorador exigente.</p>
-                    <a href="https://wa.me/529992741074" target="_blank" rel="noopener noreferrer" className="pill-button">Reserva Tu Viaje</a>
-                </div>
+                {/* Content overlays the canvas - Fades out as you scroll down */}
+                <motion.div
+                    className="hero-content"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100vh',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0 4rem',
+                        zIndex: 1,
+                        opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]) // Fade out text early
+                    }}
+                >
+                    <div className="hero-text-block">
+                        <h1 className="hero-headline">El Alma de la Tierra, <br />Refinada para Ti.</h1>
+                        <p className="hero-subtext">Vive el viaje como una colección de momentos cinematográficos y atemporales, diseñados para el explorador exigente.</p>
+                        <a href="https://wa.me/529992741074" target="_blank" rel="noopener noreferrer" className="pill-button">Reserva Tu Viaje</a>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );
